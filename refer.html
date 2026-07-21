@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Refer & Earn - CashFlix ⚡</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:24px 0; }
+.wrap { width:100%; max-width:420px; margin:0 16px; }
+.main-box { background:#fbf6ea; border-radius:28px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.6); }
+.logo-wrap { display:flex; justify-content:center; padding-top:40px; padding-bottom:14px; }
+.logo-outer { width:80px; height:80px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 16px rgba(0,0,0,.13); }
+.logo-inner { width:58px; height:58px; border-radius:14px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); display:flex; align-items:center; justify-content:center; }
+.title-wrap { text-align:center; padding:0 24px 6px; }
+.title { font-family:'Poppins',sans-serif; font-weight:800; font-size:29px; color:#1a1a1a; letter-spacing:-0.3px; }
+.subtitle { font-weight:400; font-size:16px; color:#9a9184; margin-top:8px; }
+.form-wrap { padding:20px 20px 0; }
+.offer-badge { background:#f0e4c4; color:#1c1c1c; padding:8px 18px; border-radius:50px; font-size:13px; font-weight:800; display:inline-flex; align-items:center; gap:6px; margin-bottom:14px; }
+.pill { background:#fff; border-radius:50px; padding:0 16px; display:flex; align-items:center; gap:12px; height:56px; box-shadow:0 2px 12px rgba(0,0,0,.08); border:2px solid transparent; transition:border .2s; }
+.pill.focused { border-color:#1c1c1c; }
+.pill input { flex:1; border:none; outline:none; font-size:15px; font-weight:500; color:#374151; background:transparent; font-family:'Inter',sans-serif; }
+.gen-btn { width:100%; height:54px; border-radius:50px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fdf6e3; font-weight:700; font-size:16px; border:none; cursor:pointer; letter-spacing:1.5px; box-shadow:0 4px 20px rgba(0,0,0,.35); font-family:'Poppins',sans-serif; margin-top:12px; margin-bottom:16px; transition:all .2s; }
+.gen-btn:hover { transform:translateY(-2px); }
+.gen-btn:disabled { opacity:.7; cursor:not-allowed; transform:none; }
+.link-pill { background:#fff; border-radius:50px; padding:0 16px; display:flex; align-items:center; gap:12px; height:56px; box-shadow:0 2px 12px rgba(0,0,0,.08); margin-bottom:12px; }
+.link-pill input { flex:1; border:none; outline:none; background:transparent; font-size:13px; color:#374151; font-weight:500; font-family:'Inter',sans-serif; cursor:text; overflow-x:auto; white-space:nowrap; }
+.copy-btn { width:100%; height:54px; border-radius:50px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fdf6e3; font-weight:700; font-size:15px; border:none; cursor:pointer; letter-spacing:1px; box-shadow:0 4px 20px rgba(0,0,0,.35); font-family:'Poppins',sans-serif; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:12px; }
+.new-link-btn { width:100%; height:46px; border-radius:50px; background:#fff; color:#1c1c1c; font-weight:700; font-size:14px; border:2px solid #1c1c1c; cursor:pointer; font-family:'Inter',sans-serif; margin-bottom:16px; }
+.custom-section { padding:0 20px 28px; }
+.custom-header { background:#fff; border-radius:18px; padding:0 20px; height:60px; display:flex; align-items:center; gap:16px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+.custom-header.open { border-radius:18px 18px 0 0; box-shadow:none; }
+.custom-icon { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.custom-title { flex:1; font-weight:600; font-size:16px; color:#1a1a1a; font-family:'Poppins',sans-serif; }
+.chev { transition:transform .25s; }
+.chev.up { transform:rotate(180deg); }
+.custom-body { background:#f4efe2; border-radius:0 0 18px 18px; overflow:hidden; display:none; }
+.custom-row { background:#fff; padding:16px 20px; display:flex; align-items:center; gap:14px; }
+.custom-row + .custom-row { border-top:1px solid #ece3cc; }
+.custom-label { flex:1; font-weight:400; font-size:15px; color:#374151; }
+.custom-label.bold { font-weight:700; }
+.custom-input { width:80px; border:none; border-bottom:2.5px solid #1c1c1c; outline:none; font-weight:800; font-size:18px; color:#1a1a1a; text-align:right; background:transparent; font-family:'Inter',sans-serif; padding:2px 0; }
+.custom-val { font-weight:800; font-size:18px; color:#1a1a1a; }
+.apply-wrap { padding:14px 16px 16px; }
+.apply-btn { width:100%; height:52px; border-radius:50px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fdf6e3; font-weight:700; font-size:15px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; box-shadow:0 4px 16px rgba(0,0,0,.3); }
+.error-msg { color:#e53935; font-size:13px; font-weight:700; margin-top:8px; display:none; align-items:center; gap:6px; }
+.toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-16px); background:#fffdf7; color:#1a1a1a; padding:12px 22px 12px 12px; border-radius:50px; font-size:14px; font-weight:700; z-index:10000; opacity:0; visibility:hidden; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 12px 30px -6px rgba(0,0,0,0.25); font-family:'Inter',sans-serif; display:flex; align-items:center; gap:10px; white-space:nowrap; border:1px solid #ece3cc; }
+.toast.show { opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
+.toast-icon { width:24px; height:24px; border-radius:50%; background:#1c1c1c; color:#fdf6e3; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; flex-shrink:0; }
+.toast-icon.error { background:#c62828; }
+.hidden { display:none; }
+.pill i, .custom-row i, .link-pill i { font-size:18px; width:22px; text-align:center; flex-shrink:0; color:#1c1c1c; }
+.custom-icon i { font-size:18px; color:#fdf6e3; }
+.offer-badge i { font-size:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="main-box">
+    <div class="logo-wrap">
+      <div class="logo-outer">
+        <div class="logo-inner">
+          <img src="https://i.ibb.co/gZFrdcN9/istockphoto-1412043856-1024x1024.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
+        </div>
+      </div>
+    </div>
+    <div class="title-wrap">
+      <div class="title">REFER & EARN</div>
+      <div class="subtitle" id="subtitle">Loading...</div>
+    </div>
+
+    <div class="form-wrap">
+      <div id="offerBadge" class="offer-badge hidden"></div>
+      <div class="error-msg" id="errorMsg">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="errorText">Please enter valid details!</span>
+      </div>
+
+      <div id="formStep">
+        <div class="pill" id="phonePill">
+          <i class="fa-solid fa-credit-card"></i>
+          <input type="tel" id="phoneInput" placeholder="YOUR WALLET NUMBER"
+            maxlength="10"
+            onfocus="document.getElementById('phonePill').classList.add('focused')"
+            onblur="document.getElementById('phonePill').classList.remove('focused')"
+            onkeypress="if(event.key==='Enter') generateLink()"
+            oninput="this.value=this.value.replace(/\D/g,'')"/>
+        </div>
+        <button class="gen-btn" id="genBtn" onclick="generateLink()">GENERATE LINK</button>
+      </div>
+
+      <div id="linkStep" class="hidden">
+        <div class="link-pill">
+          <i class="fa-solid fa-link"></i>
+          <input type="text" id="linkText" onkeydown="return false" onpaste="return false" oncut="return false">
+        </div>
+        <button class="copy-btn" onclick="copyLink()">
+          COPY REFER LINK
+          <i class="fa-solid fa-copy" style="color:#fdf6e3;font-size:16px;"></i>
+        </button>
+        <button class="new-link-btn" onclick="resetForm()">Generate New Link</button>
+      </div>
+    </div>
+
+    <div class="custom-section">
+      <div class="custom-header" id="customHeader" onclick="toggleCustom()">
+        <div class="custom-icon">
+          <i class="fa-solid fa-coins"></i>
+        </div>
+        <div class="custom-title">Custom Payout</div>
+        <svg class="chev" id="chevIcon" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="custom-body" id="customBody">
+        <div class="custom-row">
+          <i class="fa-solid fa-wallet"></i>
+          <span class="custom-label bold">Total Payout</span>
+          <span class="custom-val" id="totalPayoutVal">₹0</span>
+        </div>
+        <div class="custom-row">
+          <i class="fa-solid fa-user"></i>
+          <span class="custom-label">User Gets</span>
+          <input type="number" class="custom-input" id="userPayout" value="0" min="0" oninput="handleUserChange()">
+        </div>
+        <div class="custom-row">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          <span class="custom-label">You Get</span>
+          <input type="number" class="custom-input" id="myPayout" value="0" min="0" oninput="handleMyChange()">
+        </div>
+        <div class="apply-wrap">
+          <button class="apply-btn" onclick="applyCustom()">Apply Custom Amount</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastText"></span>
+</div>
+
+<script>
+const SERVER = 'https://campetihad-1.onrender.com';
+let offerName = '';
+let totalAmt = 0;
+let generatedLink = '';
+let customOpen = false;
+
+// ✅ URL se offer name lo — backend se payout lo
+window.addEventListener('load', async function() {
+  const parts = window.location.pathname.split('/');
+  offerName = decodeURIComponent(parts[parts.length - 1]);
+
+  if (!offerName || offerName === 'refer') {
+    document.getElementById('subtitle').innerText = 'Invalid offer';
+    return;
+  }
+
+  // ✅ Backend se offer payout lo
+  try {
+    const res = await fetch(`${SERVER}/offer-info?offer=${encodeURIComponent(offerName)}`);
+    const data = await res.json();
+    if (data.success) {
+      totalAmt = data.payout || 0;
+    }
+  } catch(e) {}
+
+  document.getElementById('totalPayoutVal').innerText = `₹${totalAmt}`;
+  document.getElementById('userPayout').value = 0;
+  document.getElementById('myPayout').value = 0;
+  document.getElementById('subtitle').innerText = `${offerName} - Set custom payout`;
+  document.getElementById('offerBadge').innerHTML = `<i class="fa-solid fa-gift"></i><span>${offerName}</span>`;
+  document.getElementById('offerBadge').classList.remove('hidden');
+});
+
+let toastTimer = null;
+function showToast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  const icon = document.getElementById('toastIcon');
+  document.getElementById('toastText').innerText = msg;
+  icon.innerText = ok ? '✓' : '✕';
+  icon.classList.toggle('error', !ok);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function handleUserChange() {
+  const val = Math.min(Math.max(parseInt(document.getElementById('userPayout').value) || 0, 0), totalAmt);
+  document.getElementById('userPayout').value = val;
+  document.getElementById('myPayout').value = totalAmt - val;
+}
+
+function handleMyChange() {
+  const val = Math.min(Math.max(parseInt(document.getElementById('myPayout').value) || 0, 0), totalAmt);
+  document.getElementById('myPayout').value = val;
+  document.getElementById('userPayout').value = totalAmt - val;
+}
+
+function toggleCustom() {
+  customOpen = !customOpen;
+  document.getElementById('customHeader').classList.toggle('open', customOpen);
+  document.getElementById('customBody').style.display = customOpen ? 'block' : 'none';
+  document.getElementById('chevIcon').classList.toggle('up', customOpen);
+}
+
+function applyCustom() {
+  const u = parseInt(document.getElementById('userPayout').value) || 0;
+  const m = totalAmt - u;
+  if (u <= 0) {
+    showToast('User must get at least ₹1', false);
+    return;
+  }
+  document.getElementById('myPayout').value = m;
+  document.getElementById('subtitle').innerText = `${offerName} - ₹${u} per refer`;
+  toggleCustom();
+  showToast(`User ₹${u} + You ₹${m} = ₹${totalAmt}`, true);
+}
+
+async function generateLink() {
+  const phone = document.getElementById('phoneInput').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
+  const errorText = document.getElementById('errorText');
+  const genBtn = document.getElementById('genBtn');
+
+  if (!/^[6-9]\d{9}$/.test(phone)) {
+    errorText.innerText = 'Please enter valid 10 digit wallet number!';
+    errorMsg.style.display = 'flex';
+    return;
+  }
+  if (!offerName) {
+    errorText.innerText = 'Offer not found!';
+    errorMsg.style.display = 'flex';
+    return;
+  }
+
+  const userPayout = parseInt(document.getElementById('userPayout').value) || 0;
+  const myPayout = parseInt(document.getElementById('myPayout').value) || 0;
+
+  errorMsg.style.display = 'none';
+  genBtn.innerText = 'Generating...';
+  genBtn.disabled = true;
+
+  try {
+    // ✅ Backend se refer link generate karo — sab logic backend mein
+    const res = await fetch(`${SERVER}/refer/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        offer_name: offerName,
+        referrer_phone: phone,
+        user_payout: userPayout,
+        my_payout: myPayout
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      // ✅ Backend se landing_url aata hai
+      generatedLink = data.landing_url;
+      document.getElementById('linkText').value = generatedLink;
+      document.getElementById('formStep').classList.add('hidden');
+      document.getElementById('linkStep').classList.remove('hidden');
+      showToast('Refer link generated!', true);
+    } else {
+      showToast('Error! Try again.', false);
+    }
+  } catch {
+    showToast('Error! Try again.', false);
+  }
+
+  genBtn.innerText = 'GENERATE LINK';
+  genBtn.disabled = false;
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(generatedLink).then(() => showToast('Link copied!', true));
+}
+
+function resetForm() {
+  document.getElementById('formStep').classList.remove('hidden');
+  document.getElementById('linkStep').classList.add('hidden');
+  document.getElementById('phoneInput').value = '';
+  generatedLink = '';
+}
+</script>
+</body>
+  </html>
