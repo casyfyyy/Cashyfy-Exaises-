@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/offer/:offer", "destination": "/index.html" },
+    { "source": "/refer/:offer", "destination": "/refer.html" },
+    { "source": "/tracker/user/:phone", "destination": "/tracker.html" },
+    { "source": "/tracker", "destination": "/tracker.html" }
+  ]
+}
