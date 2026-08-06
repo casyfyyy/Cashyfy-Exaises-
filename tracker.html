@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Wallet Tracker - CashFlix ⚡</title>
+<title>Wallet Tracker - CashyFy ⚡</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -19,13 +19,13 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
 .title { font-family:'Poppins',sans-serif; font-weight:800; font-size:29px; color:#1a1a1a; letter-spacing:-0.3px; }
 .subtitle { font-weight:400; font-size:16px; color:#9a9184; margin-top:6px; }
 .form-wrap { padding:0 20px 32px; display:flex; flex-direction:column; gap:14px; }
+.select-box { height:50px; border-radius:50px; border:none; background:#fff; font-size:14px; font-weight:600; color:#1e293b; outline:none; box-shadow:0 2px 10px rgba(0,0,0,.08); font-family:'Inter',sans-serif; cursor:pointer; padding-left:18px; width:100%; }
 .pill { background:#fff; border-radius:50px; padding:0 16px; display:flex; align-items:center; gap:12px; height:56px; box-shadow:0 2px 12px rgba(0,0,0,.08); border:2px solid transparent; transition:border .2s; }
 .pill.focused { border-color:#1c1c1c; }
 .pill input { flex:1; border:none; outline:none; font-size:16px; font-weight:500; color:#374151; background:transparent; font-family:'Inter',sans-serif; }
 .date-pill { background:#fff; border-radius:50px; padding:0 16px; display:flex; align-items:center; gap:8px; height:56px; box-shadow:0 2px 12px rgba(0,0,0,.08); border:2px solid #1c1c1c; }
 .date-pill input[type="date"] { flex:1; border:none; outline:none; font-size:14px; font-weight:700; color:#1e293b; background:transparent; font-family:'Inter',sans-serif; min-width:0; cursor:pointer; }
 .date-sep { color:#9a9184; font-weight:600; font-size:13px; flex-shrink:0; }
-.select-box { height:50px; border-radius:50px; border:none; background:#fff; font-size:14px; font-weight:600; color:#1e293b; outline:none; box-shadow:0 2px 10px rgba(0,0,0,.08); font-family:'Inter',sans-serif; cursor:pointer; padding-left:18px; width:100%; }
 .track-btn { height:54px; border-radius:50px; background:linear-gradient(180deg,#2b2b2b,#1c1c1c); color:#fdf6e3; font-weight:700; font-size:16px; border:none; cursor:pointer; letter-spacing:.5px; box-shadow:0 4px 24px rgba(0,0,0,.4); font-family:'Poppins',sans-serif; display:flex; align-items:center; justify-content:center; gap:12px; transition:all .2s; }
 .track-btn:disabled { opacity:.7; cursor:not-allowed; }
 .search-pill { background:#fff; border-radius:50px; padding:0 16px; display:flex; align-items:center; gap:12px; height:56px; box-shadow:0 2px 12px rgba(0,0,0,.08); border:2px solid transparent; transition:border .2s; margin-bottom:14px; }
@@ -49,9 +49,8 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
 @keyframes spin { to{transform:rotate(360deg)} }
 .pill i, .date-pill i, .search-pill i { font-size:20px; width:22px; text-align:center; flex-shrink:0; color:#1c1c1c; }
 .track-btn i, .back-btn i { font-size:16px; }
-@media (max-width:380px) {
+@media(max-width:380px) {
   .date-pill { flex-wrap:wrap; height:auto; padding:10px 14px; gap:6px; }
-  .date-pill input[type="date"] { flex:1 1 40%; min-width:110px; }
   .row-label, .row-val { font-size:13px; }
   .result-row { padding:13px 16px; }
   .title { font-size:25px; }
@@ -97,7 +96,6 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
       </button>
     </div>
   </div>
-
   <div id="resultsWrap" style="display:none; margin-top:18px;">
     <div class="search-pill" id="searchPill">
       <i class="fa-solid fa-search" style="color:#9a9184;"></i>
@@ -113,21 +111,17 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
     </button>
   </div>
 </div>
-
 <div class="toast" id="toast">
   <span class="toast-icon" id="toastIcon">✓</span>
   <span id="toastText"></span>
 </div>
-
 <script>
-const SERVER = 'https://campetihad-1.onrender.com';
+const SERVER = 'https://cashyfy-1.onrender.com';
 let allResults = [];
-
-const todayIST = new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Kolkata'});
+const todayIST = new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Kolkata'});
 document.getElementById('fromDate').value = todayIST;
 document.getElementById('toDate').value = todayIST;
 
-// ✅ Backend se offers load karo
 window.addEventListener('load', async function() {
   try {
     const res = await fetch(`${SERVER}/offers-list`);
@@ -142,14 +136,6 @@ window.addEventListener('load', async function() {
       });
     }
   } catch(e) {}
-
-  // ✅ URL se offer/phone auto select
-  const parts = window.location.pathname.split('/');
-  const lastPart = decodeURIComponent(parts[parts.length - 1]);
-  if (/^[6-9]\d{9}$/.test(lastPart)) {
-    document.getElementById('phoneInput').value = lastPart;
-    trackNow();
-  }
   updateSubtitle();
 });
 
@@ -176,78 +162,55 @@ async function trackNow() {
   const fromDate = document.getElementById('fromDate').value;
   const toDate = document.getElementById('toDate').value;
   const btn = document.getElementById('trackBtn');
-
   if (!phone || !/^[6-9]\d{9}$/.test(phone)) return showToast('Enter valid 10 digit number', false);
   if (!offer) return showToast('Select an offer', false);
-
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div><span>Tracking...</span>';
-
   try {
-    // ✅ Backend se track karo
     const res = await fetch(`${SERVER}/wallet-tracker?phone=${encodeURIComponent(phone)}`);
     const data = await res.json();
-
     const from = new Date(fromDate + 'T00:00:00+05:30');
     const to = new Date(toDate + 'T23:59:59+05:30');
-
-    if (!data.success) {
-      allResults = [];
-    } else {
+    if (!data.success) { allResults = []; }
+    else {
       allResults = data.conversions.filter(c => {
         const cDate = new Date(c.time);
         return c.offer_name === offer && cDate >= from && cDate <= to;
       });
     }
-
     renderResults(allResults);
     document.getElementById('resultsWrap').style.display = 'block';
-
-  } catch {
-    showToast('Error! Try again.', false);
-  }
-
+  } catch { showToast('Error! Try again.', false); }
   btn.disabled = false;
   btn.innerHTML = '<span>Track Now</span><i class="fa-solid fa-arrow-right"></i>';
 }
 
 function filterResults() {
   const s = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = allResults.filter(r =>
-    !s || (r.status||'').toLowerCase().includes(s) || (r.offer_name||'').toLowerCase().includes(s)
-  );
+  const filtered = allResults.filter(r => !s || (r.status||'').toLowerCase().includes(s));
   renderResults(filtered);
 }
 
 function renderResults(results) {
   const list = document.getElementById('resultsList');
-
   if (results.length === 0) {
-    list.innerHTML = `
-      <div class="no-result">
-        <div class="no-result-title"><i class="fa-solid fa-inbox"></i> No Records Found</div>
-        <div class="no-result-sub">Try different number or date range</div>
-      </div>`;
+    list.innerHTML = `<div class="no-result"><div class="no-result-title"><i class="fa-solid fa-inbox"></i> No Records Found</div><div class="no-result-sub">Try different number or date range</div></div>`;
     return;
   }
-
   list.innerHTML = results.map((r, i) => {
-    const badgeColor = (r.status === 'paid' || r.status === 'credited') ? '#22c55e' : r.status === 'pending' ? '#f59e0b' : '#ef4444';
-    const badgeText = (r.status === 'paid' || r.status === 'credited') ? 'Confirmed' : r.status === 'pending' ? 'Pending' : r.status;
-
+    const badgeColor = r.status === 'paid' ? '#22c55e' : r.status === 'pending' ? '#f59e0b' : '#ef4444';
+    const badgeText = r.status === 'paid' ? 'Confirmed' : r.status === 'pending' ? 'Pending' : r.status;
     const d = new Date(r.time);
     const date = d.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric', timeZone:'Asia/Kolkata'});
     const time = d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata'}).toUpperCase();
-
-    return `
-      <div class="result-card">
-        <div class="result-row"><span class="row-label">SL NO.</span><span class="row-val">${i+1}</span></div>
-        <div class="result-row"><span class="row-label">OFFER</span><span class="row-val">${r.offer_name}</span></div>
-        <div class="result-row"><span class="row-label">AMOUNT</span><span class="row-val">₹${r.amount}</span></div>
-        <div class="result-row"><span class="row-label">STATUS</span><span class="badge" style="background:${badgeColor}">${badgeText}</span></div>
-        <div class="result-row"><span class="row-label">DATE</span><span class="row-val">${date}</span></div>
-        <div class="result-row"><span class="row-label">TIME</span><span class="row-val">${time}</span></div>
-      </div>`;
+    return `<div class="result-card">
+      <div class="result-row"><span class="row-label">SL NO.</span><span class="row-val">${i+1}</span></div>
+      <div class="result-row"><span class="row-label">OFFER</span><span class="row-val">${r.offer_name}</span></div>
+      <div class="result-row"><span class="row-label">AMOUNT</span><span class="row-val">₹${r.amount}</span></div>
+      <div class="result-row"><span class="row-label">STATUS</span><span class="badge" style="background:${badgeColor}">${badgeText}</span></div>
+      <div class="result-row"><span class="row-label">DATE</span><span class="row-val">${date}</span></div>
+      <div class="result-row"><span class="row-label">TIME</span><span class="row-val">${time}</span></div>
+    </div>`;
   }).join('');
 }
 
@@ -259,4 +222,4 @@ function resetForm() {
 }
 </script>
 </body>
-  </html>
+</html>
