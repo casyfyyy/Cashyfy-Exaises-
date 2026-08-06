@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Refer & Earn - CashFlix ⚡</title>
+<title>Refer & Earn - CashyFy ⚡</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -27,7 +27,7 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
 .gen-btn:hover { transform:translateY(-2px); }
 .gen-btn:disabled { opacity:.7; cursor:not-allowed; transform:none; }
 .link-pill { background:#fff; border-radius:50px; padding:0 16px; display:flex; align-items:center; gap:12px; height:56px; box-shadow:0 2px 12px rgba(0,0,0,.08); margin-bottom:12px; }
-.link-pill input { flex:1; border:none; outline:none; background:transparent; font-size:13px; color:#374151; font-weight:500; font-family:'Inter',sans-serif; cursor:text; overflow-x:auto; white-space:nowrap; }
+.link-pill input { flex:1; border:none; outline:none; background:transparent; font-size:13px; color:#374151; font-weight:500; font-family:'Inter',sans-serif; white-space:nowrap; overflow:hidden; }
 .copy-btn { width:100%; height:54px; border-radius:50px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fdf6e3; font-weight:700; font-size:15px; border:none; cursor:pointer; letter-spacing:1px; box-shadow:0 4px 20px rgba(0,0,0,.35); font-family:'Poppins',sans-serif; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:12px; }
 .new-link-btn { width:100%; height:46px; border-radius:50px; background:#fff; color:#1c1c1c; font-weight:700; font-size:14px; border:2px solid #1c1c1c; cursor:pointer; font-family:'Inter',sans-serif; margin-bottom:16px; }
 .custom-section { padding:0 20px 28px; }
@@ -54,7 +54,6 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
 .hidden { display:none; }
 .pill i, .custom-row i, .link-pill i { font-size:18px; width:22px; text-align:center; flex-shrink:0; color:#1c1c1c; }
 .custom-icon i { font-size:18px; color:#fdf6e3; }
-.offer-badge i { font-size:12px; }
 </style>
 </head>
 <body>
@@ -71,14 +70,12 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
       <div class="title">REFER & EARN</div>
       <div class="subtitle" id="subtitle">Loading...</div>
     </div>
-
     <div class="form-wrap">
       <div id="offerBadge" class="offer-badge hidden"></div>
       <div class="error-msg" id="errorMsg">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <span id="errorText">Please enter valid details!</span>
       </div>
-
       <div id="formStep">
         <div class="pill" id="phonePill">
           <i class="fa-solid fa-credit-card"></i>
@@ -91,11 +88,10 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
         </div>
         <button class="gen-btn" id="genBtn" onclick="generateLink()">GENERATE LINK</button>
       </div>
-
       <div id="linkStep" class="hidden">
         <div class="link-pill">
           <i class="fa-solid fa-link"></i>
-          <input type="text" id="linkText" onkeydown="return false" onpaste="return false" oncut="return false">
+          <input type="text" id="linkText" readonly>
         </div>
         <button class="copy-btn" onclick="copyLink()">
           COPY REFER LINK
@@ -104,12 +100,9 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
         <button class="new-link-btn" onclick="resetForm()">Generate New Link</button>
       </div>
     </div>
-
     <div class="custom-section">
       <div class="custom-header" id="customHeader" onclick="toggleCustom()">
-        <div class="custom-icon">
-          <i class="fa-solid fa-coins"></i>
-        </div>
+        <div class="custom-icon"><i class="fa-solid fa-coins"></i></div>
         <div class="custom-title">Custom Payout</div>
         <svg class="chev" id="chevIcon" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
@@ -143,23 +136,19 @@ body { font-family:'Inter',sans-serif; background:#111111; min-height:100vh; dis
 </div>
 
 <script>
-const SERVER = 'https://campetihad-1.onrender.com';
+const SERVER = 'https://cashyfy-1.onrender.com';
 let offerName = '';
 let totalAmt = 0;
 let generatedLink = '';
 let customOpen = false;
 
-// ✅ URL se offer name lo — backend se payout lo
 window.addEventListener('load', async function() {
-  const parts = window.location.pathname.split('/');
+  const parts = window.location.pathname.split('/').filter(Boolean);
   offerName = decodeURIComponent(parts[parts.length - 1]);
-
   if (!offerName || offerName === 'refer') {
     document.getElementById('subtitle').innerText = 'Invalid offer';
     return;
   }
-
-  // ✅ Backend se offer payout lo
   try {
     const res = await fetch(`${SERVER}/offer-info?offer=${encodeURIComponent(offerName)}`);
     const data = await res.json();
@@ -167,7 +156,6 @@ window.addEventListener('load', async function() {
       totalAmt = data.payout || 0;
     }
   } catch(e) {}
-
   document.getElementById('totalPayoutVal').innerText = `₹${totalAmt}`;
   document.getElementById('userPayout').value = 0;
   document.getElementById('myPayout').value = 0;
@@ -210,10 +198,6 @@ function toggleCustom() {
 function applyCustom() {
   const u = parseInt(document.getElementById('userPayout').value) || 0;
   const m = totalAmt - u;
-  if (u <= 0) {
-    showToast('User must get at least ₹1', false);
-    return;
-  }
   document.getElementById('myPayout').value = m;
   document.getElementById('subtitle').innerText = `${offerName} - ₹${u} per refer`;
   toggleCustom();
@@ -225,7 +209,6 @@ async function generateLink() {
   const errorMsg = document.getElementById('errorMsg');
   const errorText = document.getElementById('errorText');
   const genBtn = document.getElementById('genBtn');
-
   if (!/^[6-9]\d{9}$/.test(phone)) {
     errorText.innerText = 'Please enter valid 10 digit wallet number!';
     errorMsg.style.display = 'flex';
@@ -236,29 +219,19 @@ async function generateLink() {
     errorMsg.style.display = 'flex';
     return;
   }
-
   const userPayout = parseInt(document.getElementById('userPayout').value) || 0;
   const myPayout = parseInt(document.getElementById('myPayout').value) || 0;
-
   errorMsg.style.display = 'none';
   genBtn.innerText = 'Generating...';
   genBtn.disabled = true;
-
   try {
-    // ✅ Backend se refer link generate karo — sab logic backend mein
     const res = await fetch(`${SERVER}/refer/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        offer_name: offerName,
-        referrer_phone: phone,
-        user_payout: userPayout,
-        my_payout: myPayout
-      })
+      body: JSON.stringify({ offer_name: offerName, referrer_phone: phone, user_payout: userPayout, my_payout: myPayout })
     });
     const data = await res.json();
     if (data.success) {
-      // ✅ Backend se landing_url aata hai
       generatedLink = data.landing_url;
       document.getElementById('linkText').value = generatedLink;
       document.getElementById('formStep').classList.add('hidden');
@@ -267,10 +240,7 @@ async function generateLink() {
     } else {
       showToast('Error! Try again.', false);
     }
-  } catch {
-    showToast('Error! Try again.', false);
-  }
-
+  } catch { showToast('Error! Try again.', false); }
   genBtn.innerText = 'GENERATE LINK';
   genBtn.disabled = false;
 }
@@ -287,4 +257,4 @@ function resetForm() {
 }
 </script>
 </body>
-  </html>
+</html>
