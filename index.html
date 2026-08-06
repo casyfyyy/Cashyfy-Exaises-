@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,50 +7,59 @@
 </head>
 <body>
 <script>
-const S = atob('aHR0cHM6Ly9jYW1wZXRpaGFkLTEub25yZW5kZXIuY29t');
+const S = atob('aHR0cHM6Ly9jYXNoeWZ5LTEub25yZW5kZXIuY29t');
 
+// ✅ Offer map — jo name dalo URL mein wo file load hogi
 const offerMap = {
-  'BJNS8X7K2': 'BR',
-  'PBVE9X3K1': 'PB',
-  'BRNS5X2K9': 'BR'
+  'Angl': 'offers/Angl.html',
+  'PB': 'offers/PB.html',
+  'WV': 'offers/WV.html',
+  'BR': 'offers/BR.html',
+  'JS': 'offers/JS.html',
+  'FR': 'offers/FR.html',
+  'IG': 'offers/IG.html',
+  'ST': 'offers/ST.html'
 };
 
-const nameMap = {
+// ✅ Refer code se offer name → slug map
+const nameToSlug = {
   'Waves': 'WV',
   'PolicyBazar': 'PB',
   'Bharat Ryd': 'BR',
   'Jigri Super': 'JS',
   'FRIENDSHIP': 'FR',
   'Incred Gold': 'IG',
-  'StoryTv Fire': 'ST',
-  'Bajaj Finance': 'BJ'
+  'StoryTv Fire': 'ST'
 };
 
-const params = new URLSearchParams(window.location.search);
-const cid = params.get('cid');
-const ref = params.get('ref');
+const parts = window.location.pathname.split('/').filter(Boolean);
+const section = parts[0];
+const slug = decodeURIComponent(parts[1] || '');
+const source = new URLSearchParams(window.location.search).get('source') || null;
 
-function go(file, refCode) {
-  window.location.replace('/offers/' + file + '.html' + (refCode ? '?ref=' + encodeURIComponent(refCode) : ''));
+function loadFile(file) {
+  fetch('/' + file)
+    .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+    .then(html => { document.open(); document.write(html); document.close(); })
+    .catch(() => showPaused());
 }
 
-if (cid && offerMap[cid]) {
-  go(offerMap[cid], ref);
-} else if (ref) {
-  fetch(`${S}/refer/amount?code=${encodeURIComponent(ref)}`)
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.offer_name) {
-        go(nameMap[data.offer_name] || data.offer_name.replace(/ /g,'').toLowerCase(), ref);
-      } else {
-        document.body.innerHTML = '<h2 style="text-align:center;margin-top:40px;font-family:sans-serif;">Offer Temporarily Paused</h2>';
-      }
-    })
-    .catch(() => {
-      document.body.innerHTML = '<h2 style="text-align:center;margin-top:40px;font-family:sans-serif;">Offer Temporarily Paused</h2>';
-    });
-} else {
+function showPaused() {
   document.body.innerHTML = '<h2 style="text-align:center;margin-top:40px;font-family:sans-serif;">Offer Temporarily Paused</h2>';
+}
+
+if (section === 'offer') {
+  if (slug && offerMap[slug]) {
+    loadFile(offerMap[slug]);
+  } else {
+    showPaused();
+  }
+} else if (section === 'refer') {
+  loadFile('refer.html');
+} else if (section === 'tracker') {
+  loadFile('tracker.html');
+} else {
+  showPaused();
 }
 </script>
 </body>
