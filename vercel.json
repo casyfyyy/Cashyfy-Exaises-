@@ -4,7 +4,11 @@
     { "source": "/refer/:slug", "destination": "/index.html" },
     { "source": "/tracker/user/:slug", "destination": "/index.html" },
     { "source": "/tracker", "destination": "/index.html" },
-    { "source": "/wallet", "destination": "/wallet.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/transactions", "destination": "/transactions.html" },
+    { "source": "/profile", "destination": "/profile.html" },
     { "source": "/admin", "destination": "/admin.html" }
   ]
 }
