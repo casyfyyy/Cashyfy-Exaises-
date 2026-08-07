@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - CashyFy Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#f7f1e3; min-height:100vh; }
+.topbar { background:#fffdf7; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #ece3cc; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.logo-text { font-family:'Poppins',sans-serif; font-size:18px; font-weight:800; color:#1a1a1a; }
+.logo-text span { color:#b8860b; }
+.avatar { width:36px; height:36px; border-radius:50%; background:#1c1c1c; color:#fdf6e3; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; cursor:pointer; position:relative; }
+.avatar-menu { position:absolute; top:44px; right:0; background:#fffdf7; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.15); border:1px solid #ece3cc; min-width:160px; overflow:hidden; display:none; z-index:200; }
+.avatar-menu.open { display:block; }
+.avatar-menu-item { padding:12px 16px; font-size:14px; font-weight:600; color:#1a1a1a; cursor:pointer; display:flex; align-items:center; gap:8px; }
+.avatar-menu-item:hover { background:#f7f1e3; }
+.avatar-menu-item.red { color:#e53935; }
+.content { padding:20px; max-width:480px; margin:0 auto; }
+.greet { margin-bottom:20px; }
+.greet-name { font-family:'Poppins',sans-serif; font-size:22px; font-weight:800; color:#1a1a1a; }
+.greet-sub { font-size:14px; color:#9a9184; margin-top:2px; }
+.balance-card { background:linear-gradient(135deg,#1c1c1c,#3a3a3a); border-radius:22px; padding:24px; margin-bottom:20px; position:relative; overflow:hidden; }
+.balance-card::after { content:''; position:absolute; right:-30px; top:-30px; width:150px; height:150px; background:rgba(255,255,255,0.04); border-radius:50%; }
+.balance-label { font-size:12px; font-weight:600; color:#f5e6c8; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+.balance-amount { font-family:'Poppins',sans-serif; font-size:42px; font-weight:800; color:#fdf6e3; margin-bottom:16px; }
+.balance-amount span { font-size:24px; }
+.balance-stats { display:flex; gap:16px; }
+.balance-stat { flex:1; }
+.bstat-label { font-size:11px; color:#9a7f5c; font-weight:600; margin-bottom:4px; }
+.bstat-val { font-size:16px; font-weight:800; color:#fdf6e3; }
+.quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.quick-card { background:#fffdf7; border-radius:18px; padding:18px; border:1px solid #ece3cc; cursor:pointer; transition:all 0.2s; }
+.quick-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+.quick-icon { width:44px; height:44px; border-radius:12px; background:#f0e4c4; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px; }
+.quick-title { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:#1a1a1a; }
+.quick-sub { font-size:12px; color:#9a9184; margin-top:2px; }
+.section-title { font-family:'Poppins',sans-serif; font-size:16px; font-weight:800; color:#1a1a1a; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+.section-title a { font-size:13px; font-weight:600; color:#9a9184; text-decoration:none; }
+.txn-item { background:#fffdf7; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px; border:1px solid #ece3cc; }
+.txn-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.txn-icon.credit { background:#f0fff4; }
+.txn-icon.debit { background:#fff0f0; }
+.txn-mid { flex:1; }
+.txn-title { font-size:14px; font-weight:700; color:#1a1a1a; }
+.txn-date { font-size:12px; color:#9a9184; margin-top:2px; }
+.txn-amt { font-size:15px; font-weight:800; }
+.txn-amt.credit { color:#22c55e; }
+.txn-amt.debit { color:#e53935; }
+.txn-status { font-size:11px; font-weight:600; margin-top:2px; text-align:right; }
+.empty-state { text-align:center; padding:40px 20px; color:#9a9184; }
+.empty-state p { font-size:14px; font-weight:600; margin-top:8px; }
+
+/* Modals */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:#fffdf7; border-radius:24px 24px 0 0; padding:28px; width:100%; max-width:480px; }
+.modal-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:800; color:#1a1a1a; margin-bottom:20px; }
+.modal-field { margin-bottom:14px; }
+.modal-field label { display:block; font-size:13px; font-weight:700; color:#1a1a1a; margin-bottom:6px; }
+.modal-field input, .modal-field select { width:100%; padding:12px 16px; border:2px solid #ece3cc; border-radius:12px; font-size:15px; font-family:'Inter',sans-serif; font-weight:600; color:#1a1a1a; outline:none; background:#fbf7ec; }
+.modal-field input:focus, .modal-field select:focus { border-color:#1c1c1c; background:#fff; }
+.method-tabs { display:flex; gap:8px; margin-bottom:16px; }
+.method-tab { flex:1; padding:10px; border-radius:10px; border:2px solid #ece3cc; background:#fff; font-size:13px; font-weight:700; cursor:pointer; text-align:center; color:#9a9184; }
+.method-tab.active { border-color:#1c1c1c; background:#1c1c1c; color:#fdf6e3; }
+.modal-btn { width:100%; padding:15px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fdf6e3; border:none; border-radius:12px; font-size:15px; font-weight:800; font-family:'Poppins',sans-serif; cursor:pointer; }
+.modal-btn:disabled { opacity:0.7; cursor:not-allowed; }
+.modal-cancel { width:100%; padding:12px; background:transparent; color:#9a9184; border:none; font-size:14px; font-weight:600; cursor:pointer; margin-top:8px; font-family:'Inter',sans-serif; }
+.balance-display { background:#f0e4c4; border-radius:10px; padding:10px 14px; font-size:14px; font-weight:700; color:#1a1a1a; margin-bottom:16px; text-align:center; }
+.toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-16px); background:#fffdf7; color:#1a1a1a; padding:12px 22px 12px 12px; border-radius:50px; font-size:14px; font-weight:800; z-index:10000; opacity:0; visibility:hidden; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 12px 30px -6px rgba(0,0,0,0.2); font-family:'Inter',sans-serif; display:flex; align-items:center; gap:10px; white-space:nowrap; border:1px solid #ece3cc; max-width:calc(100vw - 32px); }
+.toast.show { opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
+.toast-icon { width:24px; height:24px; border-radius:50%; background:#1c1c1c; color:#fdf6e3; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-text">Cashy<span>Fy</span> ⚡</div>
+  </div>
+  <div style="position:relative;">
+    <div class="avatar" id="avatarBtn" onclick="toggleAvatarMenu()">H</div>
+    <div class="avatar-menu" id="avatarMenu">
+      <div class="avatar-menu-item" onclick="goProfile()">👤 Profile</div>
+      <div class="avatar-menu-item" onclick="goTransactions()">📋 Transactions</div>
+      <div class="avatar-menu-item red" onclick="doLogout()">🚪 Logout</div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="greet">
+    <div class="greet-name">Welcome back, <span id="greetName">—</span> 👋</div>
+    <div class="greet-sub">Here's your wallet overview</div>
+  </div>
+
+  <div class="balance-card">
+    <div class="balance-label">Available Balance</div>
+    <div class="balance-amount"><span>₹</span><span id="balanceAmt">0.00</span></div>
+    <div class="balance-stats">
+      <div class="balance-stat">
+        <div class="bstat-label">Lifetime Earnings</div>
+        <div class="bstat-val">₹<span id="lifetimeAmt">0.00</span></div>
+      </div>
+      <div class="balance-stat">
+        <div class="bstat-label">Phone</div>
+        <div class="bstat-val" id="profilePhone">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-grid">
+    <div class="quick-card" onclick="openWithdraw()">
+      <div class="quick-icon">💸</div>
+      <div class="quick-title">Withdraw</div>
+      <div class="quick-sub">Bank / UPI</div>
+    </div>
+    <div class="quick-card" onclick="openTransfer()">
+      <div class="quick-icon">🔄</div>
+      <div class="quick-title">Transfer</div>
+      <div class="quick-sub">To wallet</div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    Recent Transactions
+    <a href="/transactions">View all →</a>
+  </div>
+  <div id="txnList"><div class="empty-state">⏳<p>Loading transactions...</p></div></div>
+</div>
+
+<!-- Withdraw Modal -->
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal">
+    <div class="modal-title">💸 Withdraw</div>
+    <div class="balance-display">Available: ₹<span id="wdBalance">0.00</span></div>
+    <div class="method-tabs">
+      <div class="method-tab active" id="tabUpi" onclick="selectMethod('upi')">💳 UPI</div>
+      <div class="method-tab" id="tabBank" onclick="selectMethod('bank')">🏦 Bank</div>
+    </div>
+    <div id="upiFields">
+      <div class="modal-field">
+        <label>UPI ID</label>
+        <input type="text" id="wUpi" placeholder="example@okaxis">
+      </div>
+    </div>
+    <div id="bankFields" style="display:none;">
+      <div class="modal-field">
+        <label>Account Number</label>
+        <input type="tel" id="wAccount" placeholder="Enter account number" inputmode="numeric">
+      </div>
+      <div class="modal-field">
+        <label>IFSC Code</label>
+        <input type="text" id="wIfsc" placeholder="SBIN0001234" style="text-transform:uppercase;">
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>Amount (Min ₹10)</label>
+      <input type="number" id="wAmount" placeholder="Enter amount">
+    </div>
+    <button class="modal-btn" id="wdBtn" onclick="doWithdraw()">WITHDRAW</button>
+    <button class="modal-cancel" onclick="closeWithdraw()">Cancel</button>
+  </div>
+</div>
+
+<!-- Transfer Modal -->
+<div class="modal-overlay" id="transferModal">
+  <div class="modal">
+    <div class="modal-title">🔄 Transfer</div>
+    <div class="balance-display">Available: ₹<span id="trBalance">0.00</span></div>
+    <div class="modal-field">
+      <label>Receiver Phone Number</label>
+      <input type="tel" id="trPhone" placeholder="Enter 10 digit number" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')">
+    </div>
+    <div class="modal-field">
+      <label>Amount</label>
+      <input type="number" id="trAmount" placeholder="Enter amount">
+    </div>
+    <button class="modal-btn" id="trBtn" onclick="doTransfer()">TRANSFER</button>
+    <button class="modal-cancel" onclick="closeTransfer()">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastText"></span>
+</div>
+
+<script>
+const SERVER = 'https://cashyfy-1.onrender.com';
+let currentUser = null;
+let allTxns = [];
+let withdrawMethod = 'upi';
+
+window.addEventListener('load', async () => {
+  const token = localStorage.getItem('cy_token');
+  if (!token) { window.location.href = '/login'; return; }
+  await loadProfile();
+  await loadTxns();
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#avatarBtn') && !e.target.closest('#avatarMenu')) {
+    document.getElementById('avatarMenu').classList.remove('open');
+  }
+});
+
+function toggleAvatarMenu() {
+  document.getElementById('avatarMenu').classList.toggle('open');
+}
+
+function goProfile() { window.location.href = '/profile'; }
+function goTransactions() { window.location.href = '/transactions'; }
+
+async function doLogout() {
+  try {
+    await fetch(`${SERVER}/web/logout`, { method:'POST', headers:{'x-token': localStorage.getItem('cy_token')} });
+  } catch(e) {}
+  localStorage.clear();
+  window.location.href = '/login';
+}
+
+let toastTimer = null;
+function showToast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').innerText = msg;
+  document.getElementById('toastIcon').innerText = ok ? '✓' : '✕';
+  document.getElementById('toastIcon').style.background = ok ? '#1c1c1c' : '#e53935';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+async function loadProfile() {
+  try {
+    const res = await fetch(`${SERVER}/web/profile`, { headers:{'x-token': localStorage.getItem('cy_token')} });
+    const data = await res.json();
+    if (!data.success) { window.location.href = '/login'; return; }
+    currentUser = data;
+    const firstName = data.name.split(' ')[0];
+    document.getElementById('greetName').innerText = firstName;
+    document.getElementById('avatarBtn').innerText = firstName.charAt(0).toUpperCase();
+    document.getElementById('balanceAmt').innerText = data.balance;
+    document.getElementById('lifetimeAmt').innerText = data.lifetime_earnings;
+    document.getElementById('profilePhone').innerText = data.phone;
+    document.getElementById('wdBalance').innerText = data.balance;
+    document.getElementById('trBalance').innerText = data.balance;
+  } catch(e) {}
+}
+
+async function loadTxns() {
+  try {
+    const res = await fetch(`${SERVER}/web/txns`, { headers:{'x-token': localStorage.getItem('cy_token')} });
+    const data = await res.json();
+    if (data.success) { allTxns = data.txns; renderTxns(); }
+  } catch(e) {}
+}
+
+function renderTxns() {
+  const list = document.getElementById('txnList');
+  const preview = allTxns.slice(0, 5);
+  if (preview.length === 0) {
+    list.innerHTML = `<div class="empty-state">📭<p>No transactions yet</p></div>`;
+    return;
+  }
+  list.innerHTML = preview.map(t => `
+    <div class="txn-item">
+      <div class="txn-icon ${t.type}">${t.type === 'credit' ? '⬆️' : '⬇️'}</div>
+      <div class="txn-mid">
+        <div class="txn-title">${t.title}</div>
+        <div class="txn-date">${t.date}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="txn-amt ${t.type}">${t.type === 'credit' ? '+' : '-'}₹${t.amount.toFixed(2)}</div>
+        <div class="txn-status" style="color:${t.status==='success'?'#22c55e':t.status==='pending'?'#f59e0b':'#e53935'}">${t.status}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ✅ Withdraw
+function openWithdraw() { document.getElementById('withdrawModal').classList.add('open'); }
+function closeWithdraw() { document.getElementById('withdrawModal').classList.remove('open'); }
+
+function selectMethod(method) {
+  withdrawMethod = method;
+  document.getElementById('tabUpi').classList.toggle('active', method === 'upi');
+  document.getElementById('tabBank').classList.toggle('active', method === 'bank');
+  document.getElementById('upiFields').style.display = method === 'upi' ? 'block' : 'none';
+  document.getElementById('bankFields').style.display = method === 'bank' ? 'block' : 'none';
+}
+
+async function doWithdraw() {
+  const amount = parseFloat(document.getElementById('wAmount').value);
+  const btn = document.getElementById('wdBtn');
+  if (!amount || amount < 10) { showToast('Minimum ₹10 required!', false); return; }
+  if (amount > parseFloat(currentUser?.balance || 0)) { showToast('Insufficient balance!', false); return; }
+  let body = { amount, method: withdrawMethod };
+  if (withdrawMethod === 'upi') {
+    const upi = document.getElementById('wUpi').value.trim();
+    if (!upi || !upi.includes('@')) { showToast('Enter valid UPI ID!', false); return; }
+    body.upi_id = upi;
+  } else {
+    const account = document.getElementById('wAccount').value.trim();
+    const ifsc = document.getElementById('wIfsc').value.trim().toUpperCase();
+    if (!account || !ifsc) { showToast('Fill all bank details!', false); return; }
+    body.bank_account = account;
+    body.bank_ifsc = ifsc;
+  }
+  btn.disabled = true;
+  btn.innerText = 'Processing...';
+  try {
+    const res = await fetch(`${SERVER}/web/withdraw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-token': localStorage.getItem('cy_token') },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeWithdraw();
+      showToast('Withdrawal request submitted! ✅');
+      currentUser.balance = data.new_balance;
+      document.getElementById('balanceAmt').innerText = data.new_balance;
+      document.getElementById('wdBalance').innerText = data.new_balance;
+    } else {
+      showToast(data.error || 'Error!', false);
+    }
+  } catch(e) { showToast('Server error!', false); }
+  btn.disabled = false;
+  btn.innerText = 'WITHDRAW';
+}
+
+// ✅ Transfer
+function openTransfer() { document.getElementById('transferModal').classList.add('open'); }
+function closeTransfer() { document.getElementById('transferModal').classList.remove('open'); }
+
+async function doTransfer() {
+  const phone = document.getElementById('trPhone').value.trim();
+  const amount = parseFloat(document.getElementById('trAmount').value);
+  const btn = document.getElementById('trBtn');
+  if (!/^[6-9]\d{9}$/.test(phone)) { showToast('Enter valid phone number!', false); return; }
+  if (!amount || amount <= 0) { showToast('Enter valid amount!', false); return; }
+  if (amount > parseFloat(currentUser?.balance || 0)) { showToast('Insufficient balance!', false); return; }
+  btn.disabled = true;
+  btn.innerText = 'Transferring...';
+  try {
+    const res = await fetch(`${SERVER}/web/transfer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-token': localStorage.getItem('cy_token') },
+      body: JSON.stringify({ phone, amount })
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeTransfer();
+      showToast(`₹${amount} sent to ${data.receiver_name}! ✅`);
+      currentUser.balance = data.new_balance;
+      document.getElementById('balanceAmt').innerText = data.new_balance;
+      document.getElementById('trBalance').innerText = data.new_balance;
+      document.getElementById('trPhone').value = '';
+      document.getElementById('trAmount').value = '';
+    } else {
+      showToast(data.error || 'Error!', false);
+    }
+  } catch(e) { showToast('Server error!', false); }
+  btn.disabled = false;
+  btn.innerText = 'TRANSFER';
+}
+</script>
+</body>
+  </html>
