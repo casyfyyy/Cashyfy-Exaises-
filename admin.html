@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CashyFy Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#0f172a; color:#e2e8f0; min-height:100vh; }
+.login-wrap { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
+.login-card { background:#1e293b; border-radius:20px; padding:40px; width:100%; max-width:400px; box-shadow:0 24px 64px rgba(0,0,0,.5); }
+.login-title { font-size:24px; font-weight:800; color:#f1f5f9; margin-bottom:8px; }
+.login-sub { color:#64748b; font-size:14px; margin-bottom:28px; }
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:13px; font-weight:600; color:#94a3b8; margin-bottom:6px; }
+.field input { width:100%; padding:12px 16px; background:#0f172a; border:1px solid #334155; border-radius:10px; color:#f1f5f9; font-size:15px; outline:none; font-family:'Inter',sans-serif; }
+.field input:focus { border-color:#6366f1; }
+.login-btn { width:100%; padding:14px; background:#6366f1; color:#fff; border:none; border-radius:10px; font-size:16px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; margin-top:8px; }
+.login-btn:hover { background:#4f46e5; }
+
+/* Dashboard */
+.dash { display:none; }
+.topbar { background:#1e293b; padding:16px 24px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #334155; position:sticky; top:0; z-index:100; }
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.logo { font-size:18px; font-weight:800; color:#6366f1; }
+.notif-btn { background:#6366f1; color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+.logout-btn { background:#334155; color:#94a3b8; border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+.content { padding:24px; max-width:1200px; margin:0 auto; }
+.page-title { font-size:22px; font-weight:800; color:#f1f5f9; margin-bottom:20px; }
+
+/* Stats grid */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:28px; }
+.stat-card { background:#1e293b; border-radius:14px; padding:20px; border:1px solid #334155; }
+.stat-label { font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+.stat-val { font-size:26px; font-weight:800; color:#f1f5f9; }
+.stat-val.green { color:#22c55e; }
+.stat-val.yellow { color:#f59e0b; }
+.stat-val.blue { color:#6366f1; }
+.stat-val.red { color:#ef4444; }
+
+/* Tabs */
+.tabs { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+.tab { padding:8px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid #334155; background:#1e293b; color:#64748b; font-family:'Inter',sans-serif; }
+.tab.active { background:#6366f1; color:#fff; border-color:#6366f1; }
+
+/* Table */
+.table-wrap { background:#1e293b; border-radius:14px; border:1px solid #334155; overflow:hidden; }
+.table-head { padding:16px 20px; border-bottom:1px solid #334155; display:flex; align-items:center; justify-content:space-between; }
+.table-title { font-size:15px; font-weight:700; color:#f1f5f9; }
+.refresh-btn { background:#334155; color:#94a3b8; border:none; border-radius:6px; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+table { width:100%; border-collapse:collapse; }
+th { padding:12px 16px; text-align:left; font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; border-bottom:1px solid #334155; }
+td { padding:14px 16px; font-size:13px; color:#cbd5e1; border-bottom:1px solid #1e293b; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#0f172a; }
+.badge { padding:4px 10px; border-radius:6px; font-size:11px; font-weight:700; }
+.badge.paid { background:#14532d; color:#22c55e; }
+.badge.pending { background:#451a03; color:#f59e0b; }
+.badge.cancelled { background:#450a0a; color:#ef4444; }
+.badge.active { background:#1e3a5f; color:#6366f1; }
+.action-btn { padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:none; font-family:'Inter',sans-serif; margin-right:4px; }
+.approve-btn { background:#14532d; color:#22c55e; }
+.approve-btn:hover { background:#166534; }
+.cancel-btn { background:#450a0a; color:#ef4444; }
+.cancel-btn:hover { background:#7f1d1d; }
+.empty { padding:40px; text-align:center; color:#475569; font-size:14px; }
+.search-bar { width:100%; padding:10px 16px; background:#0f172a; border:1px solid #334155; border-radius:10px; color:#f1f5f9; font-size:14px; outline:none; font-family:'Inter',sans-serif; margin-bottom:16px; }
+.search-bar:focus { border-color:#6366f1; }
+.toast { position:fixed; bottom:24px; right:24px; background:#1e293b; color:#f1f5f9; padding:14px 20px; border-radius:12px; font-size:14px; font-weight:600; z-index:9999; box-shadow:0 8px 32px rgba(0,0,0,.5); display:none; border:1px solid #334155; }
+.toast.success { border-color:#22c55e; color:#22c55e; }
+.toast.error { border-color:#ef4444; color:#ef4444; }
+@media(max-width:600px) {
+  .content { padding:16px; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  th, td { padding:10px 10px; font-size:12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-title">🔐 CashyFy Admin</div>
+    <div class="login-sub">Sign in to admin panel</div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="adminPass" placeholder="Enter admin password" onkeypress="if(event.key==='Enter') doAdminLogin()">
+    </div>
+    <button class="login-btn" onclick="doAdminLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dash" id="dashWrap">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">⚡ CashyFy Admin</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="notif-btn" onclick="enableNotifications()">🔔 Enable Notifications</button>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-title">Dashboard</div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-val blue" id="statUsers">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Balance</div><div class="stat-val green" id="statBalance">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Earnings</div><div class="stat-val green" id="statEarnings">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Paid</div><div class="stat-val green" id="statPaid">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Pending</div><div class="stat-val yellow" id="statPending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Conversions</div><div class="stat-val blue" id="statConversions">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Withdrawals</div><div class="stat-val yellow" id="statPendingW">—</div></div>
+      <div class="stat-card"><div class="stat-label">Paid Withdrawals</div><div class="stat-val green" id="statPaidW">—</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('withdrawals')">💸 Withdrawals</button>
+      <button class="tab" onclick="switchTab('users')">👥 Users</button>
+    </div>
+
+    <!-- Withdrawals -->
+    <div id="tabWithdrawals">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="tab active" id="wFilter_all" onclick="filterWithdrawals('all')">All</button>
+        <button class="tab" id="wFilter_pending" onclick="filterWithdrawals('pending')">⏳ Pending</button>
+        <button class="tab" id="wFilter_paid" onclick="filterWithdrawals('paid')">✅ Paid</button>
+        <button class="tab" id="wFilter_cancelled" onclick="filterWithdrawals('cancelled')">❌ Cancelled</button>
+      </div>
+      <input class="search-bar" id="wSearch" placeholder="Search by name, phone, amount..." oninput="renderWithdrawals()">
+      <div class="table-wrap">
+        <div class="table-head">
+          <div class="table-title">Withdrawals</div>
+          <button class="refresh-btn" onclick="loadWithdrawals()">↻ Refresh</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Request ID</th>
+                <th>Phone</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div id="tabUsers" style="display:none;">
+      <input class="search-bar" id="uSearch" placeholder="Search by name, phone..." oninput="renderUsers()">
+      <div class="table-wrap">
+        <div class="table-head">
+          <div class="table-title">All Users</div>
+          <button class="refresh-btn" onclick="loadUsers()">↻ Refresh</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Balance</th>
+                <th>Lifetime Earnings</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js"></script>
+
+<script>
+const SERVER = 'https://campetihad-1.onrender.com';
+const ADMIN_PASSWORD = 'cashyfy@admin2026';
+
+// ✅ Firebase
+firebase.initializeApp({
+  apiKey: "AIzaSyA0wgB394uLBkTVAmQmC5Dfc0RNO3qC_48",
+  authDomain: "cashyfy-2cdaa.firebaseapp.com",
+  projectId: "cashyfy-2cdaa",
+  storageBucket: "cashyfy-2cdaa.firebasestorage.app",
+  messagingSenderId: "234531032903",
+  appId: "1:234531032903:web:f0ca6ed25b8f7e495ec662"
+});
+const messaging = firebase.messaging();
+
+let allWithdrawals = [];
+let allUsers = [];
+let wFilter = 'all';
+let currentTab = 'withdrawals';
+
+// ✅ Login
+function doAdminLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === ADMIN_PASSWORD) {
+    localStorage.setItem('admin_auth', 'true');
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashWrap').style.display = 'block';
+    loadAll();
+  } else {
+    showToast('Wrong password!', 'error');
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('admin_auth');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('dashWrap').style.display = 'none';
+}
+
+// ✅ Auto login
+window.addEventListener('load', () => {
+  if (localStorage.getItem('admin_auth') === 'true') {
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('dashWrap').style.display = 'block';
+    loadAll();
+  }
+});
+
+async function loadAll() {
+  await Promise.all([loadStats(), loadWithdrawals(), loadUsers()]);
+}
+
+// ✅ Stats
+async function loadStats() {
+  try {
+    const res = await fetch(`${SERVER}/admin/stats`);
+    const data = await res.json();
+    if (!data.success) return;
+    document.getElementById('statUsers').textContent = data.totalUsers;
+    document.getElementById('statBalance').textContent = '₹' + data.totalBalance;
+    document.getElementById('statEarnings').textContent = '₹' + data.totalEarnings;
+    document.getElementById('statPaid').textContent = '₹' + data.totalPaid;
+    document.getElementById('statPending').textContent = '₹' + data.totalPending;
+    document.getElementById('statConversions').textContent = '₹' + data.totalConversions;
+    document.getElementById('statPendingW').textContent = data.pendingWithdrawals;
+    document.getElementById('statPaidW').textContent = data.paidWithdrawals;
+  } catch(e) {}
+}
+
+// ✅ Withdrawals
+async function loadWithdrawals() {
+  try {
+    const res = await fetch(`${SERVER}/admin/withdrawals`);
+    const data = await res.json();
+    if (data.success) allWithdrawals = data.withdrawals;
+    renderWithdrawals();
+  } catch(e) {}
+}
+
+function filterWithdrawals(filter) {
+  wFilter = filter;
+  ['all','pending','paid','cancelled'].forEach(f => {
+    const el = document.getElementById(`wFilter_${f}`);
+    if (el) el.classList.toggle('active', f === filter);
+  });
+  renderWithdrawals();
+}
+
+function renderWithdrawals() {
+  const search = document.getElementById('wSearch').value.toLowerCase();
+  let filtered = allWithdrawals;
+  if (wFilter !== 'all') filtered = filtered.filter(w => w.status === wFilter);
+  if (search) filtered = filtered.filter(w =>
+    (w.upi_id||'').toLowerCase().includes(search) ||
+    (w.request_id||'').toLowerCase().includes(search) ||
+    String(w.amount).includes(search)
+  );
+  const tbody = document.getElementById('withdrawalsTbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty">No withdrawals found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(w => {
+    const date = new Date(w.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Kolkata' });
+    const actions = w.status === 'pending' ? `
+      <button class="action-btn approve-btn" onclick="approveWithdraw('${w.request_id}')">✅ Approve</button>
+      <button class="action-btn cancel-btn" onclick="cancelWithdraw('${w.request_id}')">❌ Cancel</button>
+    ` : '—';
+    return `<tr>
+      <td>${w.request_id}</td>
+      <td>${w.telegram_id || '—'}</td>
+      <td>₹${parseFloat(w.amount).toFixed(2)}</td>
+      <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">${w.upi_id || '—'}</td>
+      <td><span class="badge ${w.status}">${w.status}</span></td>
+      <td>${date}</td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function approveWithdraw(requestId) {
+  if (!confirm('Approve this withdrawal?')) return;
+  try {
+    const res = await fetch(`${SERVER}/admin/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ request_id: requestId })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Withdrawal approved! ✅', 'success');
+      await loadWithdrawals();
+      await loadStats();
+    } else {
+      showToast(data.error || 'Error', 'error');
+    }
+  } catch(e) { showToast('Server error', 'error'); }
+}
+
+async function cancelWithdraw(requestId) {
+  if (!confirm('Cancel this withdrawal?')) return;
+  try {
+    const res = await fetch(`${SERVER}/admin/cancel`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ request_id: requestId })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Withdrawal cancelled!', 'success');
+      await loadWithdrawals();
+      await loadStats();
+    } else {
+      showToast(data.error || 'Error', 'error');
+    }
+  } catch(e) { showToast('Server error', 'error'); }
+}
+
+// ✅ Users
+async function loadUsers() {
+  try {
+    const res = await fetch(`${SERVER}/admin/users`);
+    const data = await res.json();
+    if (data.success) allUsers = data.users;
+    renderUsers();
+  } catch(e) {}
+}
+
+function renderUsers() {
+  const search = document.getElementById('uSearch').value.toLowerCase();
+  let filtered = allUsers;
+  if (search) filtered = filtered.filter(u =>
+    (u.name||'').toLowerCase().includes(search) ||
+    (u.phone||'').includes(search)
+  );
+  const tbody = document.getElementById('usersTbody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">No users found</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(u => {
+    const date = new Date(u.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric', timeZone:'Asia/Kolkata' });
+    return `<tr>
+      <td>${u.name || '—'}</td>
+      <td>${u.phone || '—'}</td>
+      <td>₹${parseFloat(u.balance || 0).toFixed(2)}</td>
+      <td>₹${parseFloat(u.lifetime_earnings || 0).toFixed(2)}</td>
+      <td>${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ✅ Tabs
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabWithdrawals').style.display = tab === 'withdrawals' ? 'block' : 'none';
+  document.getElementById('tabUsers').style.display = tab === 'users' ? 'block' : 'none';
+  document.querySelectorAll('.tabs .tab').forEach((el, i) => {
+    el.classList.toggle('active', (i === 0 && tab === 'withdrawals') || (i === 1 && tab === 'users'));
+  });
+}
+
+// ✅ Firebase Push Notifications
+async function enableNotifications() {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') { showToast('Permission denied!', 'error'); return; }
+    const token = await messaging.getToken({
+      vapidKey: 'BDdyCSqWnAnyZj_40hsFcnxMXM6Qru_sSzigHgZTabeZfLA3h0_lcCEozGFyfiaUIbemVOBu6EvJ6uOYrOJGzf0'
+    });
+    await fetch(`${SERVER}/admin/fcm-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    });
+    showToast('Notifications enabled! 🔔', 'success');
+  } catch(e) {
+    console.error(e);
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+// ✅ Foreground notifications
+messaging.onMessage(function(payload) {
+  const { title, body } = payload.notification;
+  showToast(`${title}: ${body}`, 'success');
+  new Notification(title, { body, icon: '/icon.png' });
+  loadWithdrawals();
+  loadStats();
+});
+
+// ✅ Toast
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.style.display = 'none', 3000);
+}
+
+// ✅ Auto refresh every 30 sec
+setInterval(() => {
+  if (localStorage.getItem('admin_auth') === 'true') {
+    loadStats();
+    loadWithdrawals();
+  }
+}, 30000);
+</script>
+</body>
+      </html>
