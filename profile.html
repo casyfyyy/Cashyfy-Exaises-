@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - CashyFy Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:#f7f1e3; min-height:100vh; }
+.topbar { background:#fffdf7; padding:16px 20px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #ece3cc; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.back-btn { background:none; border:none; font-size:20px; cursor:pointer; }
+.topbar-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:800; color:#1a1a1a; }
+.content { padding:20px; max-width:480px; margin:0 auto; }
+.profile-header { background:#fffdf7; border-radius:22px; padding:24px; text-align:center; border:1px solid #ece3cc; margin-bottom:20px; }
+.profile-avatar { width:72px; height:72px; border-radius:50%; background:#1c1c1c; color:#fdf6e3; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; margin:0 auto 12px; }
+.profile-name { font-family:'Poppins',sans-serif; font-size:20px; font-weight:800; color:#1a1a1a; }
+.profile-phone { font-size:14px; color:#9a9184; margin-top:4px; }
+.section { background:#fffdf7; border-radius:18px; border:1px solid #ece3cc; overflow:hidden; margin-bottom:16px; }
+.section-title { padding:16px 20px; font-family:'Poppins',sans-serif; font-size:15px; font-weight:800; color:#1a1a1a; border-bottom:1px solid #ece3cc; }
+.info-row { padding:14px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #ece3cc; }
+.info-row:last-child { border-bottom:none; }
+.info-label { font-size:14px; font-weight:600; color:#9a9184; }
+.info-val { font-size:14px; font-weight:700; color:#1a1a1a; }
+.field { padding:12px 20px; border-bottom:1px solid #ece3cc; }
+.field:last-child { border-bottom:none; }
+.field label { display:block; font-size:12px; font-weight:700; color:#9a9184; margin-bottom:6px; }
+.field input { width:100%; padding:12px 14px; border:2px solid #ece3cc; border-radius:12px; font-size:14px; font-family:'Inter',sans-serif; font-weight:600; color:#1a1a1a; outline:none; background:#fbf7ec; }
+.field input:focus { border-color:#1c1c1c; background:#fff; }
+.section-btn { width:calc(100% - 40px); margin:16px 20px; padding:14px; background:linear-gradient(135deg,#1c1c1c,#3a3a3a); color:#fdf6e3; border:none; border-radius:12px; font-size:15px; font-weight:800; font-family:'Poppins',sans-serif; cursor:pointer; }
+.section-btn:disabled { opacity:0.7; cursor:not-allowed; }
+.logout-btn { width:100%; padding:16px 20px; background:none; border:none; color:#e53935; font-size:15px; font-weight:700; font-family:'Inter',sans-serif; cursor:pointer; text-align:left; display:flex; align-items:center; gap:8px; }
+.toast { position:fixed; top:24px; left:50%; transform:translateX(-50%) translateY(-16px); background:#fffdf7; color:#1a1a1a; padding:12px 22px 12px 12px; border-radius:50px; font-size:14px; font-weight:800; z-index:10000; opacity:0; visibility:hidden; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 12px 30px -6px rgba(0,0,0,0.2); font-family:'Inter',sans-serif; display:flex; align-items:center; gap:10px; white-space:nowrap; border:1px solid #ece3cc; }
+.toast.show { opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
+.toast-icon { width:24px; height:24px; border-radius:50%; background:#1c1c1c; color:#fdf6e3; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='/dashboard'">←</button>
+  <div class="topbar-title">Profile</div>
+</div>
+
+<div class="content">
+  <div class="profile-header">
+    <div class="profile-avatar" id="profileAvatar">H</div>
+    <div class="profile-name" id="profileName">—</div>
+    <div class="profile-phone" id="profilePhone">—</div>
+  </div>
+
+  <!-- Account Info -->
+  <div class="section">
+    <div class="section-title">Account Info</div>
+    <div class="info-row"><span class="info-label">Balance</span><span class="info-val" id="infoBalance">₹0.00</span></div>
+    <div class="info-row"><span class="info-label">Lifetime Earnings</span><span class="info-val" id="infoLifetime">₹0.00</span></div>
+  </div>
+
+  <!-- Change Password -->
+  <div class="section">
+    <div class="section-title">Change Password</div>
+    <div class="field">
+      <label>Current Password</label>
+      <input type="password" id="curPass" placeholder="Enter current password">
+    </div>
+    <div class="field">
+      <label>New Password</label>
+      <input type="password" id="newPass" placeholder="Enter new password">
+    </div>
+    <div class="field">
+      <label>Confirm New Password</label>
+      <input type="password" id="confirmPass" placeholder="Re-enter new password">
+    </div>
+    <button class="section-btn" id="changePassBtn" onclick="changePassword()">UPDATE PASSWORD</button>
+  </div>
+
+  <!-- Logout -->
+  <div class="section">
+    <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastText"></span>
+</div>
+
+<script>
+const SERVER = 'https://cashyfy-1.onrender.com';
+
+window.addEventListener('load', async () => {
+  const token = localStorage.getItem('cy_token');
+  if (!token) { window.location.href = '/login'; return; }
+  await loadProfile();
+});
+
+let toastTimer = null;
+function showToast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').innerText = msg;
+  document.getElementById('toastIcon').innerText = ok ? '✓' : '✕';
+  document.getElementById('toastIcon').style.background = ok ? '#1c1c1c' : '#e53935';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+async function loadProfile() {
+  try {
+    const res = await fetch(`${SERVER}/web/profile`, { headers:{'x-token': localStorage.getItem('cy_token')} });
+    const data = await res.json();
+    if (!data.success) { window.location.href = '/login'; return; }
+    const firstName = data.name.split(' ')[0];
+    document.getElementById('profileAvatar').innerText = firstName.charAt(0).toUpperCase();
+    document.getElementById('profileName').innerText = data.name;
+    document.getElementById('profilePhone').innerText = data.phone;
+    document.getElementById('infoBalance').innerText = '₹' + data.balance;
+    document.getElementById('infoLifetime').innerText = '₹' + data.lifetime_earnings;
+  } catch(e) {}
+}
+
+async function changePassword() {
+  const cur = document.getElementById('curPass').value;
+  const next = document.getElementById('newPass').value;
+  const confirm = document.getElementById('confirmPass').value;
+  const btn = document.getElementById('changePassBtn');
+  if (!cur) { showToast('Enter current password!', false); return; }
+  if (next.length < 6) { showToast('New password too short!', false); return; }
+  if (next !== confirm) { showToast('Passwords do not match!', false); return; }
+  btn.disabled = true;
+  btn.innerText = 'Updating...';
+  try {
+    const res = await fetch(`${SERVER}/web/update-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-token': localStorage.getItem('cy_token') },
+      body: JSON.stringify({ current_password: cur, new_password: next })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('curPass').value = '';
+      document.getElementById('newPass').value = '';
+      document.getElementById('confirmPass').value = '';
+      showToast('Password updated! ✅');
+    } else {
+      showToast(data.error || 'Error!', false);
+    }
+  } catch(e) { showToast('Server error!', false); }
+  btn.disabled = false;
+  btn.innerText = 'UPDATE PASSWORD';
+}
+
+async function doLogout() {
+  try {
+    await fetch(`${SERVER}/web/logout`, { method:'POST', headers:{'x-token': localStorage.getItem('cy_token')} });
+  } catch(e) {}
+  localStorage.clear();
+  window.location.href = '/login';
+}
+</script>
+</body>
+</html>
