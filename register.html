@@ -276,4 +276,221 @@ label{display:block;font-size:11.5px;font-weight:600;letter-spacing:1.5px;text-t
       <div class="review-row"><span class="rlabel">Phone Verified</span><span class="rvalue verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Verified</span></div>
     </div>
     <label class="agree-box" for="agreeCheck">
+      <input type="checkbox" id="agreeCheck" onchange="toggleCreateBtn()">
+      <p>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I confirm that all information provided is accurate.</p>
+    </label>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="goStep(3)">Back</button>
+      <button class="btn btn-verify" id="createAccountBtn" disabled onclick="createAccount()">Create account</button>
+    </div>
+    <p class="foot-note">Your account will be created securely.</p>
+  </div>
+</div>
+
+</div>
+
+<div class="toast" id="toast">
+  <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText"></span>
+  <svg class="toast-close" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="hideToast()"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+</div>
+
+<script>
+const SERVER = 'https://cashyfy-1.onrender.com';
+let regPhone = '';
+let otpTimerInterval = null;
+
+window.addEventListener('load', () => {
+  if (localStorage.getItem('cy_token')) window.location.href = '/dashboard';
+});
+
+function goStep(n) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById(`step${i}Screen`);
+    if(el) el.style.display = i === n ? 'flex' : 'none';
+  });
+  window.scrollTo(0,0);
+}
+
+let toastTimer = null;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').innerText = msg;
+  t.className = 'toast show' + (type === 'error' ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, 3000);
+}
+function hideToast() { document.getElementById('toast').classList.remove('show'); }
+
+async function validateRegister() {
+  const name = document.getElementById('fullname').value.trim();
+  const phone = document.getElementById('regphone').value.trim();
+  const nameOk = /^[A-Za-z\s]{2,}$/.test(name);
+  const phoneOk = /^[6-9]\d{9}$/.test(phone);
+  document.getElementById('fullnameWrap').style.borderColor = nameOk ? 'var(--line)' : '#C25454';
+  document.getElementById('nameError').classList.toggle('show', !nameOk);
+  document.getElementById('regphoneWrap').style.borderColor = phoneOk ? 'var(--line)' : '#C25454';
+  document.getElementById('phoneError').classList.toggle('show', !phoneOk);
+  if (!nameOk || !phoneOk) return;
+  regPhone = phone;
+  try {
+    const res = await fetch(`${SERVER}/web/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('otpPhoneDisplay').textContent = phone;
+      goStep(2);
+      startOtpTimer();
+      showToast('OTP sent to your phone!');
+    } else {
+      showToast(data.error || 'Error!', 'error');
+    }
+  } catch(e) { showToast('Server error!', 'error'); }
+}
+
+function startOtpTimer() {
+  let secs = 120;
+  clearInterval(otpTimerInterval);
+  otpTimerInterval = setInterval(() => {
+    secs--;
+    const el = document.getElementById('otpTimerDisplay');
+    if(el) el.textContent = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+    if(secs <= 0) clearInterval(otpTimerInterval);
+  }, 1000);
+}
+
+async function resendOtp() {
+  try {
+    const res = await fetch(`${SERVER}/web/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: regPhone })
+    });
+    const data = await res.json();
+    if (data.success) { showToast('OTP resent!'); startOtpTimer(); }
+    else { showToast(data.error || 'Error!', 'error'); }
+  } catch(e) { showToast('Server error!', 'error'); }
+}
+
+async function verifyOtp() {
+  const otp = document.getElementById('otpInput').value.trim();
+  if (otp.length !== 6) { showToast('Enter 6 digit OTP!', 'error'); return; }
+  try {
+    const res = await fetch(`${SERVER}/web/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: regPhone, otp })
+    });
+    const data = await res.json();
+    if (data.success) {
+      clearInterval(otpTimerInterval);
+      showToast('OTP verified! ✅');
+      goStep(3);
+    } else {
+      showToast(data.error || 'Invalid OTP!', 'error');
+    }
+  } catch(e) { showToast('Server error!', 'error'); }
+}
+
+function toggleField(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function checkStrength() {
+  const val = document.getElementById('newPass').value;
+  const rules = {
+    len: val.length >= 8,
+    num: /[0-9]/.test(val),
+    special: /[^A-Za-z0-9]/.test(val),
+    case: /[a-z]/.test(val) && /[A-Z]/.test(val)
+  };
+  ['len','num','special','case'].forEach(key => {
+    document.getElementById(`rule-${key}`)?.classList.toggle('ok', rules[key]);
+  });
+  const score = Object.values(rules).filter(Boolean).length;
+  const colors = ['#C25454','#D99B4B','#D9B84B','#3CA870'];
+  const labels = ['Weak','Fair','Good','Strong'];
+  ['bar1','bar2','bar3','bar4'].forEach((id, i) => {
+    const bar = document.getElementById(id);
+    if(!bar) return;
+    bar.style.background = val.length === 0 ? 'var(--line)' : i < score ? colors[Math.max(score-1,0)] : 'var(--line)';
+  });
+  const label = document.getElementById('strengthLabel');
+  if(label) label.textContent = val.length === 0 ? '—' : labels[Math.max(score-1,0)];
+  checkMatch();
+}
+
+function checkMatch() {
+  const pass = document.getElementById('newPass').value;
+  const confirm = document.getElementById('confirmPass').value;
+  const note = document.getElementById('matchNote');
+  const text = document.getElementById('matchText');
+  const wrap = document.getElementById('confirmWrap');
+  if(!note || !wrap) return;
+  if(confirm.length === 0) { note.classList.remove('show'); wrap.style.borderColor = 'var(--line)'; return; }
+  note.classList.add('show');
+  if(pass === confirm) {
+    note.className = 'match-note show ok';
+    if(text) text.textContent = 'Passwords match';
+    wrap.style.borderColor = '#3CA870';
+  } else {
+    note.className = 'match-note show bad';
+    if(text) text.textContent = 'Passwords do not match';
+    wrap.style.borderColor = '#C25454';
+  }
+}
+
+function toggleCreateBtn() {
+  document.getElementById('createAccountBtn').disabled = !document.getElementById('agreeCheck').checked;
+}
+
+function goStep(n) {
+  if(n === 4) {
+    const pass = document.getElementById('newPass').value;
+    const confirm = document.getElementById('confirmPass').value;
+    if(pass.length < 6) { showToast('Password too short!', 'error'); return; }
+    if(pass !== confirm) { showToast('Passwords do not match!', 'error'); return; }
+    document.getElementById('reviewName').textContent = document.getElementById('fullname').value.trim();
+    document.getElementById('reviewPhone').textContent = regPhone;
+  }
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById(`step${i}Screen`);
+    if(el) el.style.display = i === n ? 'flex' : 'none';
+  });
+  window.scrollTo(0,0);
+}
+
+async function createAccount() {
+  const password = document.getElementById('newPass').value;
+  const btn = document.getElementById('createAccountBtn');
+  btn.disabled = true;
+  btn.innerText = 'Creating...';
+  try {
+    const res = await fetch(`${SERVER}/web/set-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: regPhone, password })
+    });
+    const data = await res.json();
+    if(data.success) {
+      showToast('Account created! Sign in now 🎉');
+      setTimeout(() => window.location.href = '/login', 1200);
+    } else {
+      showToast(data.error || 'Error!', 'error');
+      btn.disabled = false;
+      btn.innerText = 'Create account';
+    }
+  } catch(e) {
+    showToast('Server error!', 'error');
+    btn.disabled = false;
+    btn.innerText = 'Create account';
+  }
+}
+</script>
+</body>
+</html>
     
